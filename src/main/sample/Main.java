@@ -4,6 +4,7 @@ import MapDirections.TurnDirection;
 import MapDirections.Vector2d;
 import MapElements.Fruit;
 import MapElements.Snake;
+import MapElements.Stone;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -24,6 +25,7 @@ public class Main extends Application {
     TurnDirection turnDirection = TurnDirection.NONE;
     private long animationTimeStep = 100_000_000;
     boolean end = false;
+    int time = 0;
 
     @Override
     public void start(Stage stage) throws Exception{
@@ -34,15 +36,15 @@ public class Main extends Application {
         Separator separator = new Separator(Orientation.VERTICAL);
         root.setHgap(20);
         root.getChildren().addAll( mapChart, separator, label1);
-        Scene scene = new Scene(root, 1500, 900);
+        Scene scene = new Scene(root, 1000, 900);
         RectangularMap map = new RectangularMap(40);
 
         scene.setOnKeyPressed(e -> {
             switch (e.getCode()) {
-                case A:
+                case LEFT:
                     turnDirection = TurnDirection.RIGHT;
                     break;
-                case D:
+                case RIGHT:
                     turnDirection = TurnDirection.LEFT;
                     break;
                default:
@@ -63,6 +65,7 @@ public class Main extends Application {
                     if (end){
                         label1.setText("YOU DIED! \n Your score: " + map.getSnakeLength());
                     }
+                    time ++;
                 }
             }
 
@@ -77,6 +80,7 @@ public class Main extends Application {
             mapChart.getChildren().removeIf(n -> {
                 return true;
             });
+            if(time%20 == 0) map.placeStone();
             this.turnDirection = TurnDirection.NONE;
             draw(map, mapChart);
         }
@@ -98,6 +102,12 @@ public class Main extends Application {
                         mapChart.getChildren().add(rectangle);
                     } else if (map.objectAt(tmp) instanceof Fruit) {
                         Rectangle rectangle = new Rectangle(rectangleSize, rectangleSize, Color.RED);
+                        rectangle.setX(rectangleSize * i);
+                        rectangle.setY(rectangleSize * j);
+                        mapChart.getChildren().add(rectangle);
+                    }
+                    else if (map.objectAt(tmp) instanceof Stone) {
+                        Rectangle rectangle = new Rectangle(rectangleSize, rectangleSize, Color.GREY);
                         rectangle.setX(rectangleSize * i);
                         rectangle.setY(rectangleSize * j);
                         mapChart.getChildren().add(rectangle);

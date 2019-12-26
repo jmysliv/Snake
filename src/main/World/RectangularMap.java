@@ -16,7 +16,7 @@ public class RectangularMap {
     private Vector2d leftCorner = new Vector2d(0, 0);
     private Snake snake;
     private Fruit fruit;
-    private HashMap<Vector2d, Stone> stones;
+    private HashMap<Vector2d, Stone> stones = new HashMap<>();
 
     public RectangularMap(int size) {
         this.rightCorner = new Vector2d(size - 1, size - 1);
@@ -47,7 +47,7 @@ public class RectangularMap {
         return null;
     }
 
-    public void placeFruit(){
+    public List<Vector2d> findFreeFields(){
         List<Vector2d> freePlaces = new ArrayList<>();
         for (int i=0; i<this.rightCorner.x; i++){
             for(int j=0; j<this.rightCorner.y; j++) {
@@ -57,10 +57,23 @@ public class RectangularMap {
                 }
             }
         }
+        return freePlaces;
+    }
+
+    public void placeFruit(){
+        List<Vector2d> freePlaces = findFreeFields();
         Random rand = new Random();
         int index = rand.nextInt(freePlaces.size());
         Fruit newFruit = new Fruit(freePlaces.get(index));
         this.fruit = newFruit;
+    }
+
+    public void placeStone(){
+        List<Vector2d> freePlaces = findFreeFields();
+        Random rand = new Random();
+        int index = rand.nextInt(freePlaces.size());
+        Stone stone = new Stone(freePlaces.get(index));
+        this.stones.put(stone.getPosition(), stone);
     }
 
     public boolean run(TurnDirection turnDirection){
