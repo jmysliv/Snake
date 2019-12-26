@@ -71,4 +71,8 @@ public class Snake {
     public boolean isAlive() {
         return alive;
     }
+
+    public int getLength() {
+        return length;
+    }
 }

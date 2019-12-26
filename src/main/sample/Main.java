@@ -7,8 +7,11 @@ import MapElements.Snake;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Orientation;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Label;
+import javafx.scene.control.Separator;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
@@ -20,13 +23,17 @@ import World.RectangularMap;
 public class Main extends Application {
     TurnDirection turnDirection = TurnDirection.NONE;
     private long animationTimeStep = 100_000_000;
+    boolean end = false;
 
     @Override
     public void start(Stage stage) throws Exception{
         stage.setTitle("snake");
         FlowPane root = new FlowPane();
         Pane mapChart = new Pane();
-        root.getChildren().addAll( mapChart);
+        Label label1 = new Label("");
+        Separator separator = new Separator(Orientation.VERTICAL);
+        root.setHgap(20);
+        root.getChildren().addAll( mapChart, separator, label1);
         Scene scene = new Scene(root, 1500, 900);
         RectangularMap map = new RectangularMap(40);
 
@@ -48,11 +55,16 @@ public class Main extends Application {
             private long lastUpdate = 0 ;
             @Override
             public void handle(long now) {
+                if (!end) {
                     if (now - lastUpdate >= animationTimeStep) {
                         update(map, mapChart);
-                        lastUpdate = now ;
+                        lastUpdate = now;
+                    }
+                    if (end){
+                        label1.setText("YOU DIED! \n Your score: " + map.getSnakeLength());
                     }
                 }
+            }
 
         };
         timer.start();
@@ -61,12 +73,14 @@ public class Main extends Application {
     }
 
     public void update(RectangularMap map, Pane mapChart) {
-        mapChart.getChildren().removeIf(n -> {
-            return true;
-        });
-        map.run(this.turnDirection);
-        this.turnDirection = TurnDirection.NONE;
-        draw(map, mapChart);
+        if(map.run(this.turnDirection)) {
+            mapChart.getChildren().removeIf(n -> {
+                return true;
+            });
+            this.turnDirection = TurnDirection.NONE;
+            draw(map, mapChart);
+        }
+        else this.end = true;
     }
 
 

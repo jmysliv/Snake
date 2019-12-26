@@ -71,4 +71,8 @@ public class RectangularMap {
         }
         return false;
     }
+
+    public int getSnakeLength(){
+        return this.snake.getLength();
+    }
 }
